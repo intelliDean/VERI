@@ -1,13 +1,14 @@
-use axum::Router;
-use std::net::SocketAddr;
-use std::sync::Arc;
 use crate::config::app_router::paths;
 use crate::config::app_state::AppState;
+use crate::events::authenticity_event_listener::listen_for_authenticity_events;
+use crate::events::ownership_event_listener::listen_for_ownership_events;
 use crate::models::router_path::RouterPath;
 use anyhow::Result;
+use axum::Router;
 use dotenv::dotenv;
+use std::net::SocketAddr;
+use std::sync::Arc;
 use tokio::net::TcpListener;
-use crate::events::authenticity_event_listener::listen_for_events;
 
 pub async fn server() -> Result<()> {
     eprintln!("PROJECT STARTING...");
@@ -19,12 +20,25 @@ pub async fn server() -> Result<()> {
 
     let arc_state = Arc::from(AppState::init_app_state().await.unwrap());
 
-    let state_clone = arc_state.clone();
+    let state_clone1 = arc_state.clone();
+    let state_clone2 = arc_state.clone();
+
     tokio::spawn(async move {
-        if let Err(e) = listen_for_events(&state_clone).await {
-            eprintln!("Error in event listener: {:?}", e);
+        loop {
+            if let Err(e) = listen_for_authenticity_events(&state_clone1).await {
+                eprintln!("Error in authenticity listener, retrying in 5s: {:?}", e);
+                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            }
         }
     });
+
+    tokio::spawn(async move {
+        if let Err(e) = listen_for_ownership_events(&state_clone2).await {
+            eprintln!("Error in event listener for ownership: {:?}", e);
+            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+        }
+    });
+
 
     // Define routes
     let app: Router = paths(arc_state, RouterPath::init());

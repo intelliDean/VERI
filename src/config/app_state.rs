@@ -8,15 +8,18 @@ use ethers::signers::{Signer, Wallet};
 use std::env;
 use std::sync::Arc;
 use std::time::Duration;
-use crate::config::app_router::Authenticity;
+use crate::abis::authenticity_abi::Authenticity;
+// use crate::abis::ownership_abi::Ownership;
 use ecdsa::SigningKey;
 use ethers::core::k256::Secp256k1;
 use eyre::Report;
+use crate::abis::ownership_abi::Ownership;
 
 #[derive(Clone)]
 pub struct AppState {
     pub db_pool: Pool<ConnectionManager<PgConnection>>,
-    pub contract: Authenticity<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
+    pub authenticity_contract: Authenticity<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
+    pub ownership_contract: Ownership<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
 }
 
 impl AppState {
@@ -31,7 +34,11 @@ impl AppState {
         //contract connection
         let rpc_url = env::var("BASE_URL")?;
         let private_key = env::var("PRIVATE_KEY")?;
-        let authenticity_address: Address = env::var("CONTRACT_ADDRESS")?
+        let authenticity_address: Address = env::var("AUTHENTICITY_ADDRESS")?
+            .parse()
+            .map_err(|_| anyhow::anyhow!("Invalid contract address"))
+            .unwrap();
+        let ownership_address: Address = env::var("OWNERSHIP_ADDRESS")?
             .parse()
             .map_err(|_| anyhow::anyhow!("Invalid contract address"))
             .unwrap();
@@ -44,11 +51,13 @@ impl AppState {
 
         let eth_client = Arc::new(SignerMiddleware::new(provider, wallet.clone()));
 
-        let contract = Authenticity::new(authenticity_address, eth_client.clone());
+        let authenticity_contract = Authenticity::new(authenticity_address, eth_client.clone());
+        let ownership_contract = Ownership::new(ownership_address, eth_client.clone());
 
         let state = AppState {
             db_pool: pool,
-            contract,
+            authenticity_contract,
+            ownership_contract,
         };
         Ok(state)
     }

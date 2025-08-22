@@ -6,6 +6,7 @@ mod services;
 mod utility;
 mod schema;
 mod events;
+mod abis;
 
 #[tokio::main]
 async fn main() {

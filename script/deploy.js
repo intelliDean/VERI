@@ -46,14 +46,14 @@ main().catch((error) => {
     process.exitCode = 1;
 });
 //BASE
-// 📚 OwnershipLib deployed at: 0x3fB3BCdd95271Fc8b7ebFF48d4d7541b982355ef
-// https://sepolia.basescan.org/address/0x3fB3BCdd95271Fc8b7ebFF48d4d7541b982355ef#code
+// 📚 OwnershipLib deployed at: 0x9c7bd4cbfF0D54e0f42FE1e63A11BEaf6665D733
+// https://sepolia.basescan.org/address/0x9c7bd4cbfF0D54e0f42FE1e63A11BEaf6665D733#code
 
-// 📦 Ownership deployed at: 0x49e8207450dd0204Bb6a89A9edf7CE151cE58BBc
-// https://sepolia.basescan.org/address/0x49e8207450dd0204Bb6a89A9edf7CE151cE58BBc#code
+// 📦 Ownership deployed at: 0x6df9dFdeb719A41eCE6f23CF1AaE3085dEa26A3F
+// https://sepolia.basescan.org/address/0x6df9dFdeb719A41eCE6f23CF1AaE3085dEa26A3F#code
 
-// 🧾 Authenticity deployed at: 0x98BC72046616b528D4Bc5bbcC7d99f82237A8B55
-// https://sepolia.basescan.org/address/0x98BC72046616b528D4Bc5bbcC7d99f82237A8B55#code
+// 🧾 Authenticity deployed at: 0xF7132c4A07bC0515003D5CEC76e38ceeFA261607
+// https://sepolia.basescan.org/address/0xF7132c4A07bC0515003D5CEC76e38ceeFA261607#code
 
 // to verify a contract, you need the contract address and also the constructor parameters
 // npx hardhat verify --network base 0xf36f55D6Df2f9d5C7829ed5751d7E88FD3E82c2E 0xF2E7E2f51D7C9eEa9B0313C2eCa12f8e43bd1855 0x527caBd4bb83F94f1Fc1888D0691EF95e86795A1

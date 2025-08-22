@@ -1,7 +1,7 @@
 use crate::models::certificate_model::RegInput;
 use crate::models::certificate_model::{Certificate, CertificateData};
 use crate::models::emitted_events::ManufacturerRegistered;
-use crate::config::app_router::{Authenticity, authenticity};
+use crate::abis::authenticity_abi::{Authenticity, authenticity};
 use crate::config::app_state::AppState;
 use axum::{Json, extract::Path, extract::State, http::StatusCode};
 use ethabi::RawLog;
@@ -26,7 +26,7 @@ pub async fn manufacturer_registers(
     Json(input): Json<RegInput>,
 ) -> Result<Json<String>, StatusCode> {
     // Fetch the contract's owner
-    let contract = state.contract.clone(); // Authenticity::new(state.authenticity_contract, state.eth_client.clone());
+    let contract = state.authenticity_contract.clone(); // Authenticity::new(state.authenticity_contract, state.eth_client.clone());
 
     let receipt = contract
         .manufacturer_registers(input.name)
@@ -89,7 +89,7 @@ pub async fn get_owner(
     State(state): State<Arc<AppState>>,
     Path(input): Path<String>,
 ) -> Result<Json<Address>, StatusCode> {
-    let contract = state.contract.clone(); //Authenticity::new(state.authenticity_contract, state.eth_client.clone());
+    let contract = state.authenticity_contract.clone();; //Authenticity::new(state.authenticity_contract, state.eth_client.clone());
 
     let owner = input.parse().unwrap();
     let manufacturer_address = contract
@@ -126,7 +126,7 @@ pub async fn verify_signature(
 
     // accessing the wallet from SignerMiddleware
     // Sign the certificate
-    let signature: Signature = state.contract.client()
+    let signature: Signature = state.authenticity_contract.client()
         // .eth_client
         .signer()
         .sign_typed_data(&certificate)
@@ -144,7 +144,7 @@ pub async fn verify_signature(
 
     // Call create_item
     // let contract = Authenticity::new(state.authenticity_contract, state.eth_client.clone());
-    let contract = state.contract.clone();
+    let contract = state.authenticity_contract.clone();
     
     eprintln!("Address: {:?}", contract.client().signer().address());
     let bytes_sign = Bytes::from(signature.to_vec());
@@ -186,7 +186,7 @@ pub async fn generate_signature(
         .map_err(|_| StatusCode::BAD_REQUEST)?;
 
     let signature: Signature = state
-        .contract
+        .authenticity_contract
         .client()
         .signer()
         .sign_typed_data(&certificate)

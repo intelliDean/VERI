@@ -22,10 +22,12 @@ contract Authenticity is EIP712 {
     IEri private immutable OWNERSHIP;
 
     mapping(address manufacturer => IEri.Manufacturer) private manufacturers;
+
+    //TODO-> TO REMOVE THIS COMPLETELY (DATABASE WILL CATER FOR THIS)
     mapping(string manufacturerName => address registeredAddress) private names;
 
     event ManufacturerRegistered(address indexed manufacturerAddress, string indexed manufacturerName);
-    event ContractCreated(address indexed contractAddress, address indexed owner);
+    event AuthenticityCreated(address indexed contractAddress, address indexed owner);
 
     modifier addressZeroCheck(address _user) {
         if (_user == address(0)) revert EriErrors.ADDRESS_ZERO(_user);
@@ -42,7 +44,7 @@ contract Authenticity is EIP712 {
         OWNERSHIP = IEri(ownershipAdd);
 
         CERTIFICATE_TYPE_HASH = keccak256(bytes(certificate));
-        emit ContractCreated(address(this), msg.sender);
+        emit AuthenticityCreated(address(this), msg.sender);
     }
 
 
@@ -72,6 +74,7 @@ contract Authenticity is EIP712 {
         emit ManufacturerRegistered(user, name);
     }
 
+    //TODO-> TO REMOVE THIS AND DO ON THE DATABASE
     function getManufacturerByName(string calldata manufacturerName) external view returns (address)  {
 
         address manufacturer = names[manufacturerName];
@@ -80,7 +83,7 @@ contract Authenticity is EIP712 {
         }
         return manufacturer;
     }
-
+    //TODO-> THIS STAYS ON THE SMART CONTRACT
     function getManufacturer(address userAddress) external view returns (IEri.Manufacturer memory) {
         if (manufacturers[userAddress].manufacturerAddress == address(0)) {
             revert EriErrors.DOES_NOT_EXIST();
@@ -88,6 +91,7 @@ contract Authenticity is EIP712 {
         return manufacturers[userAddress];
     }
 
+    //TODO-> TO REMOVE THIS AND DO ON THE DATABASE
     //this will be used for off-chain verification
     function getManufacturerAddress(address expectedManufacturer) public view returns (address) {
 
@@ -100,6 +104,7 @@ contract Authenticity is EIP712 {
         return manufacturer;
     }
 
+    //TODO-> THIS STAYS ON THE SMART CONTRACT
     function verifySignature(
         IEri.Certificate memory certificate,
         bytes memory signature
@@ -132,10 +137,11 @@ contract Authenticity is EIP712 {
         return true;
     }
 
-    function hashTypedDataV4(bytes32 structHash) external view returns (bytes32) {
-        return _hashTypedDataV4(structHash);
-    }
+//    function hashTypedDataV4(bytes32 structHash) external view returns (bytes32) {
+//        return _hashTypedDataV4(structHash);
+//    }
 
+    //TODO-> THIS STAYS ON THE SMART CONTRACT
     function userClaimOwnership(IEri.Certificate memory certificate, bytes memory signature) external addressZeroCheck(msg.sender) {
         //first check the authenticity of the signature
         bool isValid = verifySignature(certificate, signature);
@@ -150,6 +156,7 @@ contract Authenticity is EIP712 {
         OWNERSHIP.createItem(msg.sender, certificate, manufacturerName);
     }
 
+    //TODO-> THIS STAYS ON THE SMART CONTRACT
     function verifyAuthenticity(IEri.Certificate memory certificate, bytes memory signature) external view returns (bool, string memory) {
         //first check the authenticity of the signature
         bool isValid = verifySignature(certificate, signature);
@@ -164,6 +171,7 @@ contract Authenticity is EIP712 {
         return (isValid, manufacturerName);
     }
 
+    //TODO-> THIS STAYS ON THE SMART CONTRACT
     function isRegistered(address user) internal view returns (bool) {
         return manufacturers[user].manufacturerAddress != address(0);
     }

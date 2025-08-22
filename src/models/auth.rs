@@ -2,22 +2,20 @@ use diesel::{AsChangeset, Insertable, Queryable};
 use ethabi::ethereum_types::{Address, H256, U256, H160};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use crate::schema::manufacturers_info;
+use crate::schema::manufacturers;
 use chrono::DateTime;
 use diesel::prelude::*;
+use chrono::Utc;
 
 
 #[derive(Queryable, Insertable, AsChangeset, Serialize, ToSchema)]
-#[diesel(table_name = crate::schema::manufacturers_info)]
+#[diesel(table_name = crate::schema::manufacturers)]
 pub struct NewManufacturer {
     pub manufacturer_address: String,
     pub manufacturer_name: String,
     pub tnx_hash: String
 }
 
-
-
-// Define a Queryable struct for the manufacturers table
 #[derive(Queryable, serde::Serialize)]
 pub struct Manu {
     pub id: i32,
@@ -28,8 +26,19 @@ pub struct Manu {
 
 }
 
+
+
+// #[derive(Queryable, Selectable, Serialize)]
+// #[diesel(check_for_backend(diesel::pg::Pg))]
+// pub struct Manu {
+//     pub id: i32,
+//     pub manufacturer_address: String,
+//     pub manufacturer_name: String,
+//     pub timestamp: Option<DateTime<Utc>>,
+//     pub tnx_hash: String,
+// }
 #[derive(Queryable, Insertable, AsChangeset, Serialize, ToSchema)]
-#[diesel(table_name = crate::schema::contracts_created)]
+#[diesel(table_name = crate::schema::contracts)]
 pub struct NewContractCreated {
     pub contract_address: String,
     pub owner: String,

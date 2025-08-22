@@ -29,9 +29,9 @@ contract Ownership {
     mapping(bytes32 => mapping(address => IEri.Item)) private tempOwners;
 
 
-    event ContractCreated(address indexed contractAddress, address indexed owner);
+    event OwnershipCreated(address indexed contractAddress, address indexed owner);
     event UserRegistered(address indexed userAddress, string indexed username);
-    event OwnershipCode(bytes32 indexed ownershipCode, address indexed tempOwner);
+    event OwnershipCode(string indexed itemId, bytes32 indexed ownershipCode, address indexed tempOwner);
     event ItemCreated(string indexed itemId, address indexed owner);
     event OwnershipClaimed(address indexed newOwner, address indexed oldOwner);
     event CodeRevoked(bytes32 indexed itemHash);
@@ -40,7 +40,7 @@ contract Ownership {
     constructor(address _owner) {
         owner = _owner;
 
-        emit ContractCreated(address(this), _owner);
+        emit OwnershipCreated(address(this), _owner);
     }
 
     modifier addressZeroCheck(address _user) {
@@ -153,7 +153,7 @@ contract Ownership {
             msg.sender,
             tempOwner
         );
-        emit OwnershipCode(itemHash, tempOwner);
+        emit OwnershipCode(itemId, itemHash, tempOwner);
     }
 
     function newOwnerClaimOwnership(bytes32 itemHash)

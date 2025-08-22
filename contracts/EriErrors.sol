@@ -22,3 +22,19 @@ contract EriErrors {
     error INVALID_MANUFACTURER_NAME(string);
     error AUTHENTICITY_NOT_SET();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

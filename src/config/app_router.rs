@@ -16,12 +16,9 @@ use tower_http::cors::CorsLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
-//abi path
-abigen!(
-    Authenticity,
-    "./hh-artifacts/contracts/Authenticity.sol/Authenticity.json",
-    event_derives(serde::Deserialize, serde::Serialize)
-);
+
+
+
 
 pub fn paths(state: Arc<AppState>, path: RouterPath) -> Router {
     let app = Router::new()
