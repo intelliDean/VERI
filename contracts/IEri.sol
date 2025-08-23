@@ -7,8 +7,8 @@ interface IEri {
     struct UserProfile { // I will create a different smart contract to manage the user profile
         address userAddress;
         string username;
-        bool isRegistered;
-        uint256 registeredAt;
+        bool isRegistered; //will remove
+        uint256 registeredAt; // will remove
     }
 
     struct Manufacturer {

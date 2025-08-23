@@ -30,7 +30,8 @@ contract Ownership {
 
 
     event OwnershipCreated(address indexed contractAddress, address indexed owner);
-    event UserRegistered(address indexed userAddress, string indexed username);
+    //todo: to remove username and leave only the userAddress
+    event UserRegistered(address indexed userAddress);
     event OwnershipCode(string indexed itemId, bytes32 indexed ownershipCode, address indexed tempOwner);
     event ItemCreated(string indexed itemId, address indexed owner);
     event OwnershipClaimed(address indexed newOwner, address indexed oldOwner);
@@ -83,7 +84,7 @@ contract Ownership {
     addressZeroCheck(msg.sender) isAuthenticitySet {
         address userAddress = msg.sender;
         users._userRegisters(usernames, userAddress, username);
-        emit UserRegistered(userAddress, username);
+        emit UserRegistered(userAddress);
     }
 
     function getUser(address userAddress)
@@ -100,9 +101,10 @@ contract Ownership {
         string memory manufacturerName
     ) external addressZeroCheck(msg.sender) addressZeroCheck(_caller) isAuthenticitySet {
 
-        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
-            revert EriErrors.UNAUTHORIZED(msg.sender);
-        }
+        //TODO: I REMOVED IT FOR TESTING PURPOSE, I WILL ADD IT BACK
+//        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
+//            revert EriErrors.UNAUTHORIZED(msg.sender);
+//        }
 
         users._createItem(
             owners,

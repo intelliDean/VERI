@@ -21,6 +21,7 @@ use ethers::core::utils::to_checksum;
 use ethers::prelude::*;
 use eyre::Result;
 use std::sync::Arc;
+use crate::schema::manufacturers::manufacturer_address;
 
 pub async fn listen_for_ownership_events(state: &Arc<AppState>) -> Result<()> {
     let contract = state.ownership_contract.clone();
@@ -137,7 +138,7 @@ pub async fn listen_for_ownership_events(state: &Arc<AppState>) -> Result<()> {
         }
         for (event, meta) in user_registered_logs {
             let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
-            process_user_registered_event(&event, conn, txn_hash)?;
+            process_user_registered_event(&event, conn, txn_hash, &contract).await?;
         }
         for (event, meta) in ownership_code_logs {
             let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
@@ -187,7 +188,7 @@ pub async fn listen_for_ownership_events(state: &Arc<AppState>) -> Result<()> {
                     eprintln!("Failed to get DB connection: {:?}", e);
                     eyre::eyre!("Failed to get DB connection: {}", e)
                 })?;
-                process_user_registered_event(&event, conn, txn_hash)?;
+                process_user_registered_event(&event, conn, txn_hash, &contract).await?;
             }
             Some(Ok((OwnershipEvents::OwnershipCodeFilter(event), meta))) => {
                 let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
@@ -287,13 +288,14 @@ fn process_ownership_created_event(
     Ok(())
 }
 
-fn process_user_registered_event(
+async fn process_user_registered_event(
     event: &UserRegisteredFilter,
     conn: &mut PgConnection,
     txn_hash: Option<String>,
+    ownership_contract: &Ownership<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>
 ) -> Result<()> {
     let user_address = to_checksum(&event.user_address, None);
-    let username = event.username.clone();
+    // let username = event.username.clone();
 
     // Check if user exists
     let exists: bool = users_info::table
@@ -314,11 +316,23 @@ fn process_user_registered_event(
         return Ok(());
     }
 
+    let username = ownership_contract
+        .get_user(user_address.parse().unwrap())
+        .call()
+        .await
+        .map_err(|e| {
+            eprintln!(
+                "Failed to call get_user for address {}: {:?}",
+                user_address, e.to_string()
+            );
+            eyre::eyre!("Failed to call get_manufacturer: {}", e)
+        })?.username;
+
     // Insert the user
     diesel::insert_into(users_info::table)
         .values(NewUserInfo {
             user_address,
-            username: username.to_string(),
+            username,
             is_registered: true,
             created_at: Utc::now().naive_utc(),
             tnx_hash: txn_hash.unwrap(),

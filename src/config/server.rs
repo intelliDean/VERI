@@ -54,3 +54,7 @@ pub async fn server() -> Result<()> {
 
     Ok(()) // another way to say return nothing
 }
+
+
+
+//TODO: https://eri-eth-ui.vercel.app/verify?cert=%7B%22name%22%3A%22Jaguar+A15%22%2C%22uniqueId%22%3A%22JAG15%22%2C%22serial%22%3A%22122121%22%2C%22date%22%3A1755909120%2C%22owner%22%3A%220xF2E7E2f51D7C9eEa9B0313C2eCa12f8e43bd1855%22%2C%22metadataHash%22%3A%220xa11af94997a5c7478c4d105198747f3dc308f60d7237b99b49f58a215a52f059%22%2C%22metadata%22%3A%5B%22GREY%22%2C%22DOUBLE+EXHAUST%22%5D%7D&sig=0xad71ff20241e4a798f4416f71411b4343ed8f939c45375d4f78125a84fdfd1fd0ca5f8d0b037cddb02bf2989b2c1b0a9e0845260867160172e07cb0cc452148b1c
