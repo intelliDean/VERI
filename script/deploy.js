@@ -9,29 +9,30 @@ async function main() {
 
     console.log("🚀 Deploying contracts...OwnershipLib");
     // Step 1: Deploy OwnershipLib
-    const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
-    const ownershipLib = await ownershipLibFactory.deploy();
-    console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
-
-    console.log("🚀 Deploying contracts...Ownership Contract");
-
-
-    // Step 2: Deploy Ownership using OwnershipLib
-    const ownershipContract = await hre.ethers.getContractFactory("Ownership", {
-        libraries: {
-            // OwnershipLib: ownershipLib.target,
-            OwnershipLib: ownershipLib.target,
-        },
-    });
-    const ownership = await ownershipContract.deploy(OWNER);
-    console.log(`📦 Ownership deployed at: ${ownership.target}`);
+    // const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
+    // const ownershipLib = await ownershipLibFactory.deploy();
+    // console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
+    //
+    // console.log("🚀 Deploying contracts...Ownership Contract");
+    //
+    //
+    // // Step 2: Deploy Ownership using OwnershipLib
+    // const ownershipContract = await hre.ethers.getContractFactory("Ownership", {
+    //     libraries: {
+    //         // OwnershipLib: ownershipLib.target,
+    //         OwnershipLib: ownershipLib.target,
+    //     },
+    // });
+    // const ownership = await ownershipContract.deploy(OWNER);
+    // console.log(`📦 Ownership deployed at: ${ownership.target}`);
 
     console.log("🚀 Deploying contracts...Authenticity");
     // Step 3: Deploy Authenticity with Ownership address
     const AuthenticityFactory = await hre.ethers.getContractFactory("Authenticity");
 
     const authenticity = await AuthenticityFactory.deploy(
-        ownership.target,
+        // ownership.target,
+        "0x9A1FC344163113d456e0f90EC65E6E65655001E0",
         CERTIFICATE,
         SIGNING_DOMAIN,
         SIGNATURE_VERSION

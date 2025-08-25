@@ -1,10 +1,19 @@
-use crate::services::other_tests::{
-    __path_generate_signature, __path_manufacturer_registers, __path_get_owner, __path_verify_signature};
-use crate::services::verify_authenticity::__path_verify_authenticity;
-use crate::services::create_eip712::__path_create_certificate;
-use crate::services::qr_code::__path_generate_qr_code;
+use crate::services::{
+    other_tests::{
+        __path_generate_signature, __path_manufacturer_registers, __path_get_owner, __path_verify_signature
+    }, 
+    verify_authenticity::__path_verify_authenticity,
+    create_eip712::__path_create_certificate,
+    qr_code::__path_generate_qr_code,
+};
+use crate::events::{
+    get_manufacturer::__path_get_manufacturer,
+    contract_models::{ManufacturerQuery, Manufacturer}
+};
 use utoipa::OpenApi;
-use crate::models::certificate_model::{RegInput, SignedCertificate, CertificateData, Eip712Object};
+use crate::models::certificate_model::{
+    RegInput, SignedCertificate, CertificateData, Eip712Object
+};
 
 // Swagger/OpenAPI configuration
 #[derive(OpenApi)]
@@ -16,10 +25,11 @@ use crate::models::certificate_model::{RegInput, SignedCertificate, CertificateD
         get_owner,
         verify_signature,
         create_certificate,
-        generate_qr_code
+        generate_qr_code,
+        get_manufacturer
     ),
     components(
-        schemas(RegInput, CertificateData, SignedCertificate, Eip712Object),
+        schemas(RegInput, CertificateData, SignedCertificate, Eip712Object, ManufacturerQuery, Manufacturer),
         // responses(Item)
     ),
     tags(

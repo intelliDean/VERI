@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+// use crate::abis::authenticity_abi::GetManufacturerAddressReturn;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct RouterPath {
@@ -8,7 +9,8 @@ pub struct RouterPath {
     pub get_owner: String,
     pub verify_signature: String,
     pub create_certificate: String,
-    pub qr_code: String
+    pub qr_code: String,
+    pub get_manufacturer: String,
 }
 
 impl RouterPath {
@@ -21,6 +23,7 @@ impl RouterPath {
             verify_signature: "/verify_signature".to_string(),
             create_certificate: "/create_certificate".to_string(),
             qr_code: "/qr_code".to_string(),
+            get_manufacturer: "/api/manufacturer".to_string(),
         }
     }
 }

@@ -5,7 +5,7 @@ diesel::table! {
         id -> Int4,
         authenticity_address -> Text,
         tnx_hash -> Text,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
     }
 }
 
@@ -14,7 +14,7 @@ diesel::table! {
         id -> Int4,
         item_hash -> Text,
         tnx_hash -> Text,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
     }
 }
 
@@ -23,7 +23,7 @@ diesel::table! {
         contract_address -> Text,
         owner -> Text,
         tnx_hash -> Text,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
     }
 }
 
@@ -37,7 +37,7 @@ diesel::table! {
         owner -> Text,
         manufacturer -> Text,
         metadata -> Array<Nullable<Text>>,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
         tnx_hash -> Text,
     }
 }
@@ -47,7 +47,7 @@ diesel::table! {
         manufacturer_address -> Text,
         manufacturer_name -> Text,
         is_registered -> Bool,
-        registered_at -> Nullable<Timestamp>,
+        registered_at -> Text,
         tnx_hash -> Text,
     }
 }
@@ -59,7 +59,7 @@ diesel::table! {
         new_owner -> Text,
         old_owner -> Text,
         tnx_hash -> Text,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
     }
 }
 
@@ -68,7 +68,7 @@ diesel::table! {
         ownership_code -> Text,
         item_owner -> Text,
         temp_owner -> Text,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
         tnx_hash -> Text,
     }
 }
@@ -78,7 +78,7 @@ diesel::table! {
         user_address -> Text,
         username -> Text,
         is_registered -> Bool,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Text,
         tnx_hash -> Text,
     }
 }

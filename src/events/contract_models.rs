@@ -1,86 +1,82 @@
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::contracts)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Contract {
     pub contract_address: String,
     pub owner: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
-
-#[derive(Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::contracts)]
 pub struct NewContract {
     pub contract_address: String,
     pub owner: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::users_info)]
 pub struct UserInfo {
     pub user_address: String,
     pub username: String,
     pub is_registered: bool,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
     pub tnx_hash: String,
 }
 
-#[derive(Insertable, Serialize, Deserialize)]
-#[diesel(table_name = crate::schema::users_info)]
-pub struct NewUserInfo {
-    pub user_address: String,
-    pub username: String,
-    pub is_registered: bool,
-    pub created_at: NaiveDateTime,
-    pub tnx_hash: String,
-}
-
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, Debug, ToSchema)]
 #[diesel(table_name = crate::schema::manufacturers)]
+#[serde(rename_all = "camelCase")]
 pub struct Manufacturer {
-    pub manufacturer_address: String,
-    pub manufacturer_name: String,
-    pub is_registered: bool,
-    pub registered_at: NaiveDateTime,
-    pub tnx_hash: String,
+    #[schema(example = "0x1234567890abcdef1234567890abcdef12345678")]
+    manufacturer_address: String,
+    #[schema(example = "SAMSUNG")]
+    manufacturer_name: String,
+    #[schema(example = true)]
+    is_registered: bool,
+    #[schema(example = "2025-08-24T12:04:00Z")]
+    registered_at: String,
 }
 
-#[derive(Insertable, Serialize, Deserialize)]
+
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = crate::schema::manufacturers)]
 pub struct NewManufacturer {
     pub manufacturer_address: String,
     pub manufacturer_name: String,
     pub is_registered: bool,
-    pub registered_at: NaiveDateTime,
-    pub tnx_hash: String,
+    pub registered_at: String,
+    pub tnx_hash: String
 }
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::ownership_codes)]
 pub struct OwnershipCode {
     pub ownership_code: String,
     pub item_owner: String,
     pub temp_owner: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
     pub tnx_hash: String,
 }
 
-#[derive(Insertable, Serialize, Deserialize)]
-#[diesel(table_name = crate::schema::ownership_codes)]
-pub struct NewOwnershipCode {
-    pub ownership_code: String,
-    pub item_owner: String,
-    pub temp_owner: String,
-    pub created_at: NaiveDateTime,
-    pub tnx_hash: String,
-}
+// #[derive(Insertable, Serialize, Deserialize)]
+// #[diesel(table_name = crate::schema::ownership_codes)]
+// pub struct NewOwnershipCode {
+//     pub ownership_code: String,
+//     pub item_owner: String,
+//     pub temp_owner: String,
+//     pub created_at: String,
+//     pub tnx_hash: String,
+// }
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::items)]
 pub struct Item {
     pub id: i32,
@@ -91,7 +87,7 @@ pub struct Item {
     pub owner: String,
     pub manufacturer: String,
     pub metadata: Vec<String>,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
     pub tnx_hash: String,
 }
 
@@ -105,11 +101,11 @@ pub struct NewItem {
     pub owner: String,
     pub manufacturer: String,
     pub metadata: Vec<String>,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
     pub tnx_hash: String,
 }
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::ownership_claims)]
 pub struct OwnershipClaim {
     pub id: i32,
@@ -117,7 +113,7 @@ pub struct OwnershipClaim {
     pub new_owner: String,
     pub old_owner: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]
@@ -127,7 +123,7 @@ pub struct NewOwnershipClaim {
     pub new_owner: String,
     pub old_owner: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
 #[derive(Queryable, Insertable, Serialize, Deserialize)]
@@ -136,7 +132,7 @@ pub struct CodeRevokation {
     pub id: i32,
     pub item_hash: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]
@@ -144,16 +140,16 @@ pub struct CodeRevokation {
 pub struct NewCodeRevokation {
     pub item_hash: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
-#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::authenticity_settings)]
 pub struct AuthenticitySetting {
     pub id: i32,
     pub authenticity_address: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]
@@ -161,5 +157,24 @@ pub struct AuthenticitySetting {
 pub struct NewAuthenticitySetting {
     pub authenticity_address: String,
     pub tnx_hash: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: String,
 }
+
+
+#[derive(Deserialize, ToSchema)]
+pub struct ManufacturerQuery {
+    #[schema(example = "0x1234567890abcdef1234567890abcdef12345678")]
+    pub(crate) address: Option<String>,
+    #[schema(example = "john_doe")]
+    pub(crate) username: Option<String>,
+}
+
+// #[derive(Deserialize, ToSchema)]
+// #[serde(rename_all = "camelCase")]
+// #[derive(Debug)]
+// pub enum ManufacturerQuery {
+//     #[schema(example = "0x1234567890abcdef1234567890abcdef12345678")]
+//     Address(String),
+//     #[schema(example = "john_doe")]
+//     Username(String),
+// }

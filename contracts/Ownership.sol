@@ -12,30 +12,44 @@ contract Ownership {
     address private AUTHENTICITY;
 
     address private immutable owner;
-    // this links username to a user profile
-    mapping(string => IEri.UserProfile) private users;
+   
     //link wallet address to username
     mapping(address => string) private usernames;
-    //this links itemId to the address of the owner
-    mapping(string => address) private owners;
-    // this links a user address to the itemId to the Item
-    mapping(address => mapping(string => IEri.Item)) private ownedItems;
-    //all items belonging to a user
-    mapping(address => IEri.Item[]) private myItems;
 
-    // this links the ownership code to the temp owner
-    mapping(bytes32 => address) private temp;
-    //this links change of ownership code to the new owner to the Item
-    mapping(bytes32 => mapping(address => IEri.Item)) private tempOwners;
+    // this links itemId to the Item
+    mapping(string => IEri.Item) private items;
 
 
-    event OwnershipCreated(address indexed contractAddress, address indexed owner);
+    // //this links itemId to the address of the owner
+    // mapping(string => address) private owners;
+    // // this links a user address to the itemId to the Item
+    //  // this links username to a user profile
+    // mapping(string => IEri.UserProfile) private users;
+    // mapping(address => mapping(string => IEri.Item)) private ownedItems;
+    
+
+    // //all items belonging to a user
+    // mapping(address => IEri.Item[]) private myItems;
+
+    // // this links the ownership code to the temp owner
+    // mapping(bytes32 => address) private temp;
+    // //this links change of ownership code to the new owner to the Item
+    // mapping(bytes32 => mapping(address => IEri.Item)) private tempOwners;
+
+    event OwnershipCreated(
+        address indexed contractAddress,
+        address indexed owner
+    );
     //todo: to remove username and leave only the userAddress
-    event UserRegistered(address indexed userAddress);
-    event OwnershipCode(string indexed itemId, bytes32 indexed ownershipCode, address indexed tempOwner);
-    event ItemCreated(string indexed itemId, address indexed owner);
-    event OwnershipClaimed(address indexed newOwner, address indexed oldOwner);
-    event CodeRevoked(bytes32 indexed itemHash);
+    event UserRegistered(address indexed userAddress, string username);
+    // event OwnershipCode(string indexed itemId, bytes32 indexed ownershipCode, address indexed tempOwner);
+    event ItemCreated(string itemId);
+    event OwnershipTransferred(
+        string itemId,
+        address indexed newOnwer,
+        address indexed oldOnwer
+    );
+    // event CodeRevoked(bytes32 indexed itemHash);
     event AuthenticitySet(address indexed authenticityAddress);
 
     constructor(address _owner) {
@@ -49,15 +63,14 @@ contract Ownership {
         _;
     }
 
-    modifier onlyOwner(string memory itemId) {
-        if (msg.sender != owners[itemId])
-            revert EriErrors.ONLY_OWNER(msg.sender);
-        _;
-    }
+    // modifier onlyOwner(string memory itemId) {
+    //     if (msg.sender != items[itemId].owner)
+    //         revert EriErrors.ONLY_OWNER(msg.sender);
+    //     _;
+    // }
 
     modifier onlyContractOwner() {
-        if (msg.sender != owner)
-            revert EriErrors.ONLY_OWNER(msg.sender);
+        if (msg.sender != owner) revert EriErrors.ONLY_OWNER(msg.sender);
         _;
     }
 
@@ -70,7 +83,9 @@ contract Ownership {
 
     //to make sure that the createItem function can only be called by the authenticity contract,
     // we set the authenticity address here
-    function setAuthenticity(address authenticityAddress) external onlyContractOwner {
+    function setAuthenticity(
+        address authenticityAddress
+    ) external onlyContractOwner {
         AUTHENTICITY = authenticityAddress;
         emit AuthenticitySet(authenticityAddress);
     }
@@ -79,19 +94,20 @@ contract Ownership {
     // if they have a basename, we save their basename as their username
     // if not, we suggest that they get a basename and register with a base name,
     // if not, we register them with their username
-    function userRegisters(string calldata username)
-    external
-    addressZeroCheck(msg.sender) isAuthenticitySet {
+    function userRegisters(
+        string calldata username
+    ) external addressZeroCheck(msg.sender) isAuthenticitySet {
         address userAddress = msg.sender;
-        users._userRegisters(usernames, userAddress, username);
-        emit UserRegistered(userAddress);
+        usernames._userRegisters(userAddress, username);
+
+        emit UserRegistered(userAddress, username);
     }
 
-    function getUser(address userAddress)
-    public
-    view isAuthenticitySet
-    returns (IEri.UserProfile memory) {
-        return users._getUser(usernames, userAddress);
+    //this returns the username of a user instead of the whole user profile
+    function getUsername(
+        address userAddress
+    ) public view isAuthenticitySet returns (string memory) {
+        return usernames._getUser(userAddress);
     }
 
     //when a user claims item for the first time, the Originality contract call this function
@@ -99,126 +115,132 @@ contract Ownership {
         address _caller,
         IEri.Certificate memory certificate,
         string memory manufacturerName
-    ) external addressZeroCheck(msg.sender) addressZeroCheck(_caller) isAuthenticitySet {
-
+    )
+        external
+        addressZeroCheck(msg.sender)
+        addressZeroCheck(_caller)
+        isAuthenticitySet
+    {
         //TODO: I REMOVED IT FOR TESTING PURPOSE, I WILL ADD IT BACK
-//        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
-//            revert EriErrors.UNAUTHORIZED(msg.sender);
-//        }
+        //        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
+        //            revert EriErrors.UNAUTHORIZED(msg.sender);
+        //        }
 
-        users._createItem(
-            owners,
-            ownedItems,
-            myItems,
+        items._createItem(
+            // myItems,
             usernames,
             _caller,
             certificate,
             manufacturerName
         );
 
-        emit ItemCreated(certificate.uniqueId, _caller);
+        emit ItemCreated(certificate.uniqueId);
     }
 
+    //TODO: THIS FUNCTION WILL BE REMOVED, THIS WILL BE DONE ON THE BACKEND (DATABASE)
     //to get all of the items that belong to me
-    function getAllMyItems()
-    external
-    view isAuthenticitySet
-    returns (IEri.Item[] memory) {
-        address user = msg.sender;
-        return users._getAllItemsFor(usernames, ownedItems, myItems, user);
-    }
+    // function getAllMyItems()
+    // external
+    // view isAuthenticitySet
+    // returns (IEri.Item[] memory) {
+    //     address user = msg.sender;
+    //     return users._getAllItemsFor(usernames, ownedItems, myItems, user);
+    // }
 
     //========================================
 
-    //when the owner wants to change ownership, he already knows who the new owner will be
-    //so he generates a change of ownership code. he could he either give you the code or
-    // you get a mail or you get an in-app notification with a link to claim ownership
-    // if the new owner does not claim ownership, the owner remains the owner
-    // owner can revoke change of ownership when the new owner have not claimed ownership
-    //if the new owner claims ownership, old owner cannot revoke the change of ownership
-    function generateChangeOfOwnershipCode(
-        string memory itemId,
-        address tempOwner
-    )
-    external
-    addressZeroCheck(msg.sender) //make sure the caller is not address 0
-    addressZeroCheck(tempOwner) // make sure the temp owner is not address 0
-    isAuthenticitySet
-    onlyOwner(itemId) {
+    //TODO: THIS FUNCTION WILL BE REMOVED, THIS WILL BE DONE ON THE BACKEND (DATABASE)
+    /*
+    frontend will send the transaction to the backend and after all checks it will be saved in the database
+    when the user comes to claim, he sends the change of ownership transaction on chain and chain the ownership
+    when this is done, an event is emitted and the event listener picks it up and use it to update the dabatase
+    */
+    // function generateChangeOfOwnershipCode(
+    //     string memory itemId,
+    //     address tempOwner
+    // )
+    // external
+    // addressZeroCheck(msg.sender) //make sure the caller is not address 0
+    // addressZeroCheck(tempOwner) // make sure the temp owner is not address 0
+    // isAuthenticitySet
+    // onlyOwner(itemId) {
 
-        bytes32 itemHash = users._generateChangeOfOwnershipCode(
-            usernames,
-            ownedItems,
-            temp,
-            tempOwners,
-            itemId,
-            msg.sender,
-            tempOwner
-        );
-        emit OwnershipCode(itemId, itemHash, tempOwner);
-    }
+    //     bytes32 itemHash = users._generateChangeOfOwnershipCode(
+    //         usernames,
+    //         ownedItems,
+    //         temp,
+    //         tempOwners,
+    //         itemId,
+    //         msg.sender,
+    //         tempOwner
+    //     );
+    //     emit OwnershipCode(itemId, itemHash, tempOwner);
+    // }
 
-    function newOwnerClaimOwnership(bytes32 itemHash)
-    external
-    isAuthenticitySet
-    addressZeroCheck(msg.sender) {
-
+    // function newOwnerClaimOwnership(bytes32 itemHash)
+    function newOwnerClaimOwnership(
+        string memory itemId
+    ) external isAuthenticitySet addressZeroCheck(msg.sender) {
         address newOwner = msg.sender;
-        address oldOwner = users._newOwnerClaimOwnership(
-            usernames,
-            ownedItems,
-            myItems,
-            owners,
-            temp,
-            tempOwners,
+        address oldOwner = usernames._newOwnerClaimOwnership(
+            items,
+            // myItems,
+            // owners,
+            // temp,
+            // tempOwners,
             newOwner,
-            itemHash
+            itemId
         );
 
-        emit OwnershipClaimed(newOwner, oldOwner);
+        emit OwnershipTransferred(itemId, newOwner, oldOwner);
     }
 
-    function getTempOwner(bytes32 itemHash) external view isAuthenticitySet returns (address)  {
-        return temp[itemHash];
-    }
+    //TODO: THIS FUNCTION IS MOVED TO THE BACKEND (BACKEND)
+    // function getTempOwner(
+    //     bytes32 itemHash
+    // ) external view isAuthenticitySet returns (address) {
+    //     return temp[itemHash];
+    // }
 
-    function ownerRevokeCode(bytes32 itemHash)
-    external
-    isAuthenticitySet
-    addressZeroCheck(msg.sender) {
-        users._ownerRevokeCode(usernames, temp, tempOwners, msg.sender, itemHash);
-        emit CodeRevoked(itemHash);
-    }
+    //TODO: THIS FUNCTION IS MOVED TO THE BACKEND (BACKEND)
+    // function ownerRevokeCode(
+    //     bytes32 itemHash
+    // ) external isAuthenticitySet addressZeroCheck(msg.sender) {
+    //     users._ownerRevokeCode(
+    //         usernames,
+    //         temp,
+    //         tempOwners,
+    //         msg.sender,
+    //         itemHash
+    //     );
+    //     emit CodeRevoked(itemHash);
+    // }
 
     //this function is meant to verify the owner of an item
     //it will return the item and all of it's information, including the owner
-    function getItem(string memory itemId)
-    public
-    view isAuthenticitySet
-    returns (IEri.Item memory) {
-        return ownedItems._getItem(owners, itemId);
+    function getItem(
+        string memory itemId
+    ) public view isAuthenticitySet returns (IEri.Item memory) {
+        return items._getItem(itemId);
     }
 
     //when ownership is to be verified, use can either input the itemId or scan the QR code
     //if it's itemId that's input then the itemId is use
     //if it's the QR code that's signed, uniqueId is extracted from the from the certificate and use in place of itemId
-    function verifyOwnership(string memory itemId)
-    external
-    view isAuthenticitySet
-    returns (IEri.Owner memory) {
-        return ownedItems._verifyOwnership(owners, usernames, itemId);
+    function verifyOwnership(
+        string memory itemId
+    ) external view isAuthenticitySet returns (IEri.Owner memory) {
+        return items._verifyOwnership(usernames, itemId);
     }
 
-    function isOwner(address user, string memory itemId)
-    external
-    view isAuthenticitySet
-    returns (bool) {
-
-        return ownedItems._isOwner(user, itemId);
+    function isOwner(
+        address user,
+        string memory itemId
+    ) external view isAuthenticitySet returns (bool) {
+        return items._isOwner(user, itemId);
     }
 
     function iOwn(string memory itemId) external view returns (bool) {
-
-        return ownedItems._iOwn(msg.sender, itemId);
+        return items._iOwn(msg.sender, itemId);
     }
 }

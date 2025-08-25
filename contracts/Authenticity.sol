@@ -24,10 +24,13 @@ contract Authenticity is EIP712 {
     mapping(address manufacturer => IEri.Manufacturer) private manufacturers;
 
     //TODO-> TO REMOVE THIS COMPLETELY (DATABASE WILL CATER FOR THIS)
-    mapping(string manufacturerName => address registeredAddress) private names;
+//    mapping(string manufacturerName => address registeredAddress) private names;
 
-    event ManufacturerRegistered(address indexed manufacturerAddress, string indexed manufacturerName);
+    //TODO: I will remove manufacturerName(on the index) from the event, leaving only manufacturerAddress
+    // i added username to data instead of indexing it so that it can come out as a raw data and not hash
+    event ManufacturerRegistered(address indexed manufacturerAddress, string username);
     event AuthenticityCreated(address indexed contractAddress, address indexed owner);
+//    event ItemCreated(string indexed itemId, address indexed owner);
 
     modifier addressZeroCheck(address _user) {
         if (_user == address(0)) revert EriErrors.ADDRESS_ZERO(_user);
@@ -42,47 +45,52 @@ contract Authenticity is EIP712 {
     ) EIP712(signingDomain, signatureVersion)  {
 
         OWNERSHIP = IEri(ownershipAdd);
-
         CERTIFICATE_TYPE_HASH = keccak256(bytes(certificate));
+
         emit AuthenticityCreated(address(this), msg.sender);
     }
 
 
     function manufacturerRegisters(string memory name) external addressZeroCheck(msg.sender) {
 
-        address user = msg.sender;
+        address manufacturerToBe = msg.sender;
 
-        if (isRegistered(user)) {
-            revert EriErrors.ALREADY_REGISTERED(user);
+        if (isRegistered(manufacturerToBe)) {
+            revert EriErrors.ALREADY_REGISTERED(manufacturerToBe);
         }
 
         if (bytes(name).length < 2) {
             revert EriErrors.INVALID_MANUFACTURER_NAME(name);
         }
 
-        if (names[name] != address(0)) {
-            revert EriErrors.NAME_NOT_AVAILABLE(name);
-        }
+        // When manufacturer wants to register, a call will be made to the backend to check
+        // the availability of the username before the transaction is sent to the smart contract
+        // so this check will no longer be needed on the smart contract
+        // if (names[name] != address(0)) {
+        //     revert EriErrors.NAME_NOT_AVAILABLE(name);
+        // }
 
         //caller will be the owner of the contract, that's why you must call from your wallet
         IEri.Manufacturer storage newManufacturer = manufacturers[msg.sender];
-        newManufacturer.manufacturerAddress = user;
+        newManufacturer.manufacturerAddress = manufacturerToBe;
         newManufacturer.name = name;
 
-        names[name] = user;
+        //TODO: I will remove this
+        // names[name] = user;
 
-        emit ManufacturerRegistered(user, name);
+        emit ManufacturerRegistered(manufacturerToBe, name);
     }
 
     //TODO-> TO REMOVE THIS AND DO ON THE DATABASE
-    function getManufacturerByName(string calldata manufacturerName) external view returns (address)  {
+    // function getManufacturerByName(string calldata manufacturerName) external view returns (address)  {
 
-        address manufacturer = names[manufacturerName];
-        if (manufacturer == address(0)) {
-            revert EriErrors.DOES_NOT_EXIST();
-        }
-        return manufacturer;
-    }
+    //     address manufacturer = names[manufacturerName];
+    //     if (manufacturer == address(0)) {
+    //         revert EriErrors.DOES_NOT_EXIST();
+    //     }
+    //     return manufacturer;
+    // }
+
     //TODO-> THIS STAYS ON THE SMART CONTRACT
     function getManufacturer(address userAddress) external view returns (IEri.Manufacturer memory) {
         if (manufacturers[userAddress].manufacturerAddress == address(0)) {
@@ -93,16 +101,16 @@ contract Authenticity is EIP712 {
 
     //TODO-> TO REMOVE THIS AND DO ON THE DATABASE
     //this will be used for off-chain verification
-    function getManufacturerAddress(address expectedManufacturer) public view returns (address) {
+    // function getManufacturerAddress(address expectedManufacturer) public view returns (address) {
 
-        address manufacturer = manufacturers[expectedManufacturer].manufacturerAddress;
+    //     address manufacturer = manufacturers[expectedManufacturer].manufacturerAddress;
 
-        if (manufacturer == address(0) || expectedManufacturer != manufacturer) {
-            revert EriErrors.DOES_NOT_EXIST();
-        }
+    //     if (manufacturer == address(0) || expectedManufacturer != manufacturer) {
+    //         revert EriErrors.DOES_NOT_EXIST();
+    //     }
 
-        return manufacturer;
-    }
+    //     return manufacturer;
+    // }
 
     //TODO-> THIS STAYS ON THE SMART CONTRACT
     function verifySignature(
@@ -127,19 +135,28 @@ contract Authenticity is EIP712 {
         address signer = digest.recover(signature);
 
         //very important, to make sure the owner is genuine and valid
-        address manufacturer = getManufacturerAddress(certificate.owner);
+//        address manufacturer = getManufacturerAddress(certificate.owner);
+        //===
+
+        //very important, to make sure the owner is genuine and valid
+        address manufacturerAddress = manufacturers[certificate.owner].manufacturerAddress;
+
+        if (manufacturerAddress == address(0) || certificate.owner != manufacturerAddress) {
+            revert EriErrors.DOES_NOT_EXIST();
+        }
 
         //check the signer against a genuine manufacturer
-        if (signer != manufacturer) {
+        if (signer != manufacturerAddress) {
             revert EriErrors.INVALID_SIGNATURE();
         }
 
         return true;
     }
 
-//    function hashTypedDataV4(bytes32 structHash) external view returns (bytes32) {
-//        return _hashTypedDataV4(structHash);
-//    }
+    //TODO-> THIS WILL BE REMOVED AFTER ALL (IT'S ONLY USED FOR TESTING)
+   function hashTypedDataV4(bytes32 structHash) external view returns (bytes32) {
+       return _hashTypedDataV4(structHash);
+   }
 
     //TODO-> THIS STAYS ON THE SMART CONTRACT
     function userClaimOwnership(IEri.Certificate memory certificate, bytes memory signature) external addressZeroCheck(msg.sender) {
@@ -154,6 +171,7 @@ contract Authenticity is EIP712 {
         string memory manufacturerName = manufacturers[certificate.owner].name;
 
         OWNERSHIP.createItem(msg.sender, certificate, manufacturerName);
+//        emit ItemCreated(certificate.uniqueId, msg.sender);
     }
 
     //TODO-> THIS STAYS ON THE SMART CONTRACT

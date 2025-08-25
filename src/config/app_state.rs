@@ -8,6 +8,7 @@ use ethers::signers::{Signer, Wallet};
 use std::env;
 use std::sync::Arc;
 use std::time::Duration;
+use diesel::Connection;
 use crate::abis::authenticity_abi::Authenticity;
 // use crate::abis::ownership_abi::Ownership;
 use ecdsa::SigningKey;
@@ -24,7 +25,11 @@ pub struct AppState {
 
 impl AppState {
     pub async fn init_app_state() -> anyhow::Result<AppState, Report> {
-        let db_url = env::var("DATABASE_URL")?;
+        let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+        // let establish_connection = PgConnection::establish(&db_url)
+        //     .unwrap_or_else(|_| panic!("Error connecting to {}", db_url));
+
         let manager = ConnectionManager::<PgConnection>::new(db_url);
         let pool = Pool::builder()
             .max_size(10)

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS contracts
     contract_address TEXT PRIMARY KEY,
     owner            TEXT NOT NULL,
     tnx_hash         TEXT NOT NULL,
-    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at       TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_info
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users_info
     user_address  TEXT PRIMARY KEY,
     username      TEXT    NOT NULL,
     is_registered BOOLEAN NOT NULL,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at    TEXT    NOT NULL,
     tnx_hash      TEXT    NOT NULL
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS manufacturers
     manufacturer_address TEXT PRIMARY KEY,
     manufacturer_name    TEXT    NOT NULL,
     is_registered        BOOLEAN NOT NULL,
-    registered_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    registered_at        TEXT    NOT NULL,
     tnx_hash             TEXT    NOT NULL
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS ownership_codes
     ownership_code TEXT PRIMARY KEY,
     item_owner     TEXT NOT NULL,
     temp_owner     TEXT NOT NULL,
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at     TEXT NOT NULL,
     tnx_hash       TEXT NOT NULL
 );
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS items
     owner        TEXT   NOT NULL,
     manufacturer TEXT   NOT NULL,
     metadata     TEXT[] NOT NULL,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at   TEXT   NOT NULL,
     tnx_hash     TEXT   NOT NULL
 );
 
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS ownership_claims
     new_owner  TEXT NOT NULL,
     old_owner  TEXT NOT NULL,
     tnx_hash   TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS code_revokations
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS code_revokations
     id         SERIAL PRIMARY KEY,
     item_hash  TEXT NOT NULL,
     tnx_hash   TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS authenticity_settings
@@ -70,5 +70,5 @@ CREATE TABLE IF NOT EXISTS authenticity_settings
     id                   SERIAL PRIMARY KEY,
     authenticity_address TEXT NOT NULL,
     tnx_hash             TEXT NOT NULL,
-    created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at           TEXT NOT NULL
 );

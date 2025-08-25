@@ -15,10 +15,7 @@ use ethers::contract::abigen;
 use tower_http::cors::CorsLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
-
-
-
-
+use crate::events::get_manufacturer::get_manufacturer;
 
 pub fn paths(state: Arc<AppState>, path: RouterPath) -> Router {
     let app = Router::new()
@@ -29,6 +26,7 @@ pub fn paths(state: Arc<AppState>, path: RouterPath) -> Router {
         .route(&path.verify_signature, post(verify_signature))
         .route(&path.create_certificate, post(create_certificate))
         .route(&path.qr_code, post(generate_qr_code))
+        .route(&path.get_manufacturer, get(get_manufacturer))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(state)
         .layer(CorsLayer::permissive()); // Optional: Enable CORS
