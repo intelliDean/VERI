@@ -1,19 +1,27 @@
-use crate::services::{
-    other_tests::{
-        __path_generate_signature, __path_manufacturer_registers, __path_get_owner, __path_verify_signature
-    }, 
-    verify_authenticity::__path_verify_authenticity,
-    create_eip712::__path_create_certificate,
-    qr_code::__path_generate_qr_code,
+use crate::authenticity::get_manufacturer::__path_get_manufacturer;
+use crate::authenticity::is_username_exist::__path_manufacturer_name_exists;
+use crate::authenticity::is_username_exist::{IsExistsQuery, IsExistsResponse};
+use crate::contract_models::{Manufacturer, ManufacturerQuery};
+use crate::models::certificate_model::{
+    CertificateData, Eip712Object, RegInput, SignedCertificate,
 };
-use crate::events::{
-    get_manufacturer::__path_get_manufacturer,
-    contract_models::{ManufacturerQuery, Manufacturer}
+use crate::ownership::{
+    get_user_info::{__path_get_user, UserQuery, UserResponse},
+    is_name_exist::{__path_user_exists, UserExistsQuery, UserExistsResponse},
+    get_my_items::{__path_get_owner_items, ItemQuery, ItemsResponse},
+    transfer_ownership_code::{__path_transfer_ownership_code, OwnershipCodeResponse, GenerateOwnershipCodeQuery},
+    get_transfer_code::{__path_get_ownership_code, GetOwnershipCodeQuery}
+};
+use crate::services::{
+    create_eip712::__path_create_certificate,
+    other_tests::{
+        __path_generate_signature, __path_get_owner, __path_manufacturer_registers,
+        __path_verify_signature,
+    },
+    qr_code::__path_generate_qr_code,
+    verify_authenticity::__path_verify_authenticity,
 };
 use utoipa::OpenApi;
-use crate::models::certificate_model::{
-    RegInput, SignedCertificate, CertificateData, Eip712Object
-};
 
 // Swagger/OpenAPI configuration
 #[derive(OpenApi)]
@@ -26,11 +34,35 @@ use crate::models::certificate_model::{
         verify_signature,
         create_certificate,
         generate_qr_code,
-        get_manufacturer
+        get_manufacturer,
+        manufacturer_name_exists,
+        get_user,
+        user_exists,
+        get_owner_items,
+        transfer_ownership_code,
+        get_ownership_code
     ),
     components(
-        schemas(RegInput, CertificateData, SignedCertificate, Eip712Object, ManufacturerQuery, Manufacturer),
-        // responses(Item)
+        schemas(
+            RegInput,
+            CertificateData,
+            SignedCertificate,
+            Eip712Object,
+            ManufacturerQuery,
+            Manufacturer,
+            IsExistsResponse,
+            IsExistsQuery,
+            UserResponse,
+            UserQuery,
+            UserExistsQuery,
+            UserExistsResponse,
+            ItemQuery,
+            ItemsResponse,
+            GenerateOwnershipCodeQuery,
+            OwnershipCodeResponse,
+            GetOwnershipCodeQuery
+        ),
+        // responses()
     ),
     tags(
         (name = "ERI", description = "Signature Verifying APIs")

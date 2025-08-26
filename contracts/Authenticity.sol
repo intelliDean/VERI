@@ -55,7 +55,7 @@ contract Authenticity is EIP712 {
 
         address manufacturerToBe = msg.sender;
 
-        if (isRegistered(manufacturerToBe)) {
+        if (manufacturers[manufacturerToBe].manufacturerAddress != address(0)) {
             revert EriErrors.ALREADY_REGISTERED(manufacturerToBe);
         }
 
@@ -187,10 +187,5 @@ contract Authenticity is EIP712 {
         string memory manufacturerName = manufacturers[certificate.owner].name;
 
         return (isValid, manufacturerName);
-    }
-
-    //TODO-> THIS STAYS ON THE SMART CONTRACT
-    function isRegistered(address user) internal view returns (bool) {
-        return manufacturers[user].manufacturerAddress != address(0);
     }
 }

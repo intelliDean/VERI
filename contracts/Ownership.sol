@@ -121,7 +121,7 @@ contract Ownership {
         addressZeroCheck(_caller)
         isAuthenticitySet
     {
-        //TODO: I REMOVED IT FOR TESTING PURPOSE, I WILL ADD IT BACK
+        //TODO: I REMOVED IT FOR TESTING PURPOSE, I WILL ADD IT BACK FOR PRODUCTION
         //        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
         //            revert EriErrors.UNAUTHORIZED(msg.sender);
         //        }

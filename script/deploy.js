@@ -9,30 +9,29 @@ async function main() {
 
     console.log("🚀 Deploying contracts...OwnershipLib");
     // Step 1: Deploy OwnershipLib
-    // const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
-    // const ownershipLib = await ownershipLibFactory.deploy();
-    // console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
-    //
-    // console.log("🚀 Deploying contracts...Ownership Contract");
-    //
-    //
-    // // Step 2: Deploy Ownership using OwnershipLib
-    // const ownershipContract = await hre.ethers.getContractFactory("Ownership", {
-    //     libraries: {
-    //         // OwnershipLib: ownershipLib.target,
-    //         OwnershipLib: ownershipLib.target,
-    //     },
-    // });
-    // const ownership = await ownershipContract.deploy(OWNER);
-    // console.log(`📦 Ownership deployed at: ${ownership.target}`);
+    const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
+    const ownershipLib = await ownershipLibFactory.deploy();
+    console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
+
+    console.log("🚀 Deploying contracts...Ownership Contract");
+
+
+    // Step 2: Deploy Ownership using OwnershipLib
+    const ownershipContract = await hre.ethers.getContractFactory("Ownership", {
+        libraries: {
+            // OwnershipLib: ownershipLib.target,
+            OwnershipLib: ownershipLib.target,
+        },
+    });
+    const ownership = await ownershipContract.deploy(OWNER);
+    console.log(`📦 Ownership deployed at: ${ownership.target}`);
 
     console.log("🚀 Deploying contracts...Authenticity");
     // Step 3: Deploy Authenticity with Ownership address
     const AuthenticityFactory = await hre.ethers.getContractFactory("Authenticity");
 
     const authenticity = await AuthenticityFactory.deploy(
-        // ownership.target,
-        "0x9A1FC344163113d456e0f90EC65E6E65655001E0",
+        ownership.target,
         CERTIFICATE,
         SIGNING_DOMAIN,
         SIGNATURE_VERSION
@@ -48,15 +47,17 @@ main().catch((error) => {
 });
 
 
+
+
 //BASE
-// 📚 OwnershipLib deployed at: 0x8AF76032Ec73F837b7CDF033902Ec2d8a9c50936
-// https://sepolia.basescan.org/address/0x8AF76032Ec73F837b7CDF033902Ec2d8a9c50936#code
+// 📚 OwnershipLib deployed at: 0x4719D3637B0C9508C776F922EBB132AA861cc3fd
+// https://sepolia.basescan.org/address/0x4719D3637B0C9508C776F922EBB132AA861cc3fd#code
 
-// 📦 Ownership deployed at: 0x9A1FC344163113d456e0f90EC65E6E65655001E0
-// https://sepolia.basescan.org/address/0x9A1FC344163113d456e0f90EC65E6E65655001E0#code
+// 📦 Ownership deployed at: 0x02e779664E1610ce9b81233C7f7fD9e911dd1DEe
+// https://sepolia.basescan.org/address/0x02e779664E1610ce9b81233C7f7fD9e911dd1DEe#code
 
-// 🧾 Authenticity deployed at: 0x1e3aD2984204120aE6E560B1F8EB5341a27791A9
-// https://sepolia.basescan.org/address/0x1e3aD2984204120aE6E560B1F8EB5341a27791A9#code
+// 🧾 Authenticity deployed at: 0x1901cc67055A6bE3238d0fc1c2dEc3a62CFEb8d5
+// https://sepolia.basescan.org/address/0x1901cc67055A6bE3238d0fc1c2dEc3a62CFEb8d5#code
 
 // to verify a contract, you need the contract address and also the constructor parameters
 // npx hardhat verify --network base 0xf36f55D6Df2f9d5C7829ed5751d7E88FD3E82c2E 0xF2E7E2f51D7C9eEa9B0313C2eCa12f8e43bd1855 0x527caBd4bb83F94f1Fc1888D0691EF95e86795A1

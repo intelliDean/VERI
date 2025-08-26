@@ -9,12 +9,12 @@ use std::env;
 use std::sync::Arc;
 use std::time::Duration;
 use diesel::Connection;
-use crate::abis::authenticity_abi::Authenticity;
+use crate::authenticity::authenticity_abi::Authenticity;
 // use crate::abis::ownership_abi::Ownership;
 use ecdsa::SigningKey;
 use ethers::core::k256::Secp256k1;
 use eyre::Report;
-use crate::abis::ownership_abi::Ownership;
+use crate::ownership::ownership_abi::Ownership;
 
 #[derive(Clone)]
 pub struct AppState {

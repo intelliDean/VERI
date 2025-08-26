@@ -1,4 +1,4 @@
-use crate::abis::authenticity_abi::authenticity;
+use crate::authenticity::authenticity_abi::authenticity;
 use crate::utility::to_meta_hash;
 use ethabi::ethereum_types::{Address, U256};
 use ethers::contract::EthEvent;

@@ -1,5 +1,5 @@
 use crate::config::app_state::AppState;
-use crate::events::contract_models::{Manufacturer, ManufacturerQuery};
+use crate::contract_models::{Manufacturer, ManufacturerQuery};
 use crate::schema::manufacturers;
 use axum::Json;
 use axum::extract::{Query, State};

@@ -1,10 +1,14 @@
-use crate::abis::authenticity_abi::{Authenticity, AuthenticityEvents};
-use crate::abis::authenticity_abi::{AuthenticityCreatedFilter, ManufacturerRegisteredFilter, /*ItemCreatedFilter*/};
+use crate::authenticity::authenticity_abi::{
+    Authenticity,
+    AuthenticityEvents,
+    AuthenticityCreatedFilter,
+    ManufacturerRegisteredFilter
+};
+// use crate::authenticity::authenticity_abi::{, , /*ItemCreatedFilter*/};
 use crate::config::app_state::AppState;
-use crate::events::contract_models::{NewContract, NewItem, NewManufacturer};
-use crate::schema::{contracts, items, manufacturers};
+use crate::contract_models::{NewContract, NewManufacturer};
+use crate::schema::{contracts, manufacturers};
 use chrono::Utc;
-use diesel::associations::HasTable;
 use diesel::prelude::*;
 use diesel::{PgConnection, RunQueryDsl};
 use ecdsa::SigningKey;
@@ -13,7 +17,6 @@ use ethers::core::utils::to_checksum;
 use ethers::prelude::*;
 use eyre::Result;
 use std::sync::Arc;
-use crate::abis::ownership_abi::{ItemCreatedFilter, Ownership, OwnershipEvents};
 
 pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()> {
     let contract = state.authenticity_contract.clone();
@@ -49,10 +52,6 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
             .event::<AuthenticityCreatedFilter>()
             .from_block(current_block)
             .to_block(to_block);
-        // let item_created_filter = contract
-        //     .event::<ItemCreatedFilter>()
-        //     .from_block(current_block)
-        //     .to_block(to_block);
 
         // Fetch historical events with metadata
         let manufacturer_registered_logs = manufacturer_registered_filter
@@ -76,31 +75,22 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 );
                 eyre::eyre!("Failed to query AuthenticityCreated events: {}", e)
             })?;
-        // let item_created_logs = item_created_filter.query_with_meta().await.map_err(|e| {
-        //     eprintln!(
-        //         "Failed to query ItemCreated events for blocks {} to {}: {:?}",
-        //         current_block, to_block, e.to_string()
-        //     );
-        //     eyre::eyre!("Failed to query ItemCreated events: {}", e)
-        // })?;
 
         // Process historical events
         let conn = &mut state.db_pool.get().map_err(|e| {
             eprintln!("Failed to get DB connection: {:?}", e);
             eyre::eyre!("Failed to get DB connection: {}", e)
         })?;
+
         for (event, meta) in manufacturer_registered_logs {
             let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
             process_manufacturer_registered_event(&event, conn, txn_hash, &contract).await?;
         }
+
         for (event, meta) in authenticity_created_logs {
             let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
             process_authenticity_created_event(&event, conn, txn_hash)?;
         }
-        // for (event, meta) in item_created_logs {
-        //     let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
-        //     process_item_created_event(&event, conn, txn_hash, &contract).await?;
-        // }
 
         current_block = to_block + 1;
     }
@@ -108,13 +98,16 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
     // Stream future events
     eprintln!("Starting Authenticity event stream from block {}", latest_block + 1);
     let events = contract.events().from_block(latest_block + 1);
+
     let mut stream = events.stream_with_meta().await.map_err(|e| {
         eprintln!("Failed to create event stream: {:?}", e);
         eyre::eyre!("Failed to create event stream: {}", e)
     })?;
 
+
     loop {
         match stream.next().await {
+
             Some(Ok((AuthenticityEvents::ManufacturerRegisteredFilter(event), meta))) => {
                 let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
                 let conn = &mut state.db_pool.get().map_err(|e| {
@@ -123,6 +116,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 })?;
                 process_manufacturer_registered_event(&event, conn, txn_hash, &contract).await?;
             }
+
             Some(Ok((AuthenticityEvents::AuthenticityCreatedFilter(event), meta))) => {
                 let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
                 let conn = &mut state.db_pool.get().map_err(|e| {
@@ -131,14 +125,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 })?;
                 process_authenticity_created_event(&event, conn, txn_hash)?;
             }
-            // Some(Ok((OwnershipEvents::ItemCreatedFilter(event), meta))) => {
-            //     let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
-            //     let conn = &mut state.db_pool.get().map_err(|e| {
-            //         eprintln!("Failed to get DB connection: {:?}", e);
-            //         eyre::eyre!("Failed to get DB connection: {}", e)
-            //     })?;
-            //     process_item_created_event(&event, conn, txn_hash, &contract).await?;
-            // }
+
             Some(Ok((AuthenticityEvents::Eip712DomainChangedFilter(_event), meta))) => {
                 eprintln!(
                     "EIP712DomainChanged event received (tx: 0x{})",
@@ -199,7 +186,7 @@ async fn process_manufacturer_registered_event(
             manufacturer_address,
             manufacturer_name,
             is_registered: true,
-            registered_at: Utc::now().naive_utc().to_string(),
+            registered_at:  Utc::now().to_rfc3339(),
             tnx_hash: txn_hash.ok_or_else(|| {
                 eyre::eyre!("Transaction hash is required for manufacturer registration")
             })?,
@@ -252,9 +239,9 @@ fn process_authenticity_created_event(
             tnx_hash: txn_hash.ok_or_else(|| {
                 eyre::eyre!("Transaction hash is required for manufacturer registration")
             })?,
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339(),
         })
-        .returning(crate::events::contract_models::Contract::as_returning())
+        .returning(crate::contract_models::Contract::as_returning())
         .get_result(conn)
         .map_err(|e| {
             eprintln!("Failed to insert contract: {:?}", e);

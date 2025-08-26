@@ -56,7 +56,7 @@ pub struct NewManufacturer {
     pub tnx_hash: String
 }
 
-#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Insertable, Serialize, Deserialize, ToSchema)]
 #[diesel(table_name = crate::schema::ownership_codes)]
 pub struct OwnershipCode {
     pub ownership_code: String,
@@ -66,29 +66,18 @@ pub struct OwnershipCode {
     pub tnx_hash: String,
 }
 
-// #[derive(Insertable, Serialize, Deserialize)]
-// #[diesel(table_name = crate::schema::ownership_codes)]
-// pub struct NewOwnershipCode {
-//     pub ownership_code: String,
-//     pub item_owner: String,
-//     pub temp_owner: String,
-//     pub created_at: String,
-//     pub tnx_hash: String,
-// }
-
-#[derive(Queryable, Selectable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, ToSchema)]
 #[diesel(table_name = crate::schema::items)]
 pub struct Item {
-    pub id: i32,
     pub item_id: String,
     pub name: String,
     pub serial: String,
     pub date: i64,
     pub owner: String,
     pub manufacturer: String,
-    pub metadata: Vec<String>,
+    #[schema(nullable = true, value_type = Vec<Option<String>>)]
+    pub metadata: Vec<Option<String>>,
     pub created_at: String,
-    pub tnx_hash: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]

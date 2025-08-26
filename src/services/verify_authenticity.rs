@@ -13,7 +13,7 @@ use ethers::{
 use std::error::Error;
 use std::sync::Arc;
 use validator::Validate;
-use crate::abis::authenticity_abi::{authenticity, Authenticity};
+use crate::authenticity::authenticity_abi::{authenticity, Authenticity};
 
 
 #[utoipa::path(

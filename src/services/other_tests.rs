@@ -1,4 +1,4 @@
-use crate::abis::authenticity_abi::authenticity;
+use crate::authenticity::authenticity_abi::authenticity;
 use crate::config::app_state::AppState;
 use crate::models::certificate_model::RegInput;
 use crate::models::certificate_model::{Certificate, CertificateData};

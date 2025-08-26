@@ -1,10 +1,10 @@
-use crate::abis::ownership_abi::{
+use crate::ownership::ownership_abi::{
     AuthenticitySetFilter, ItemCreatedFilter, OwnershipCreatedFilter, OwnershipTransferredFilter,
     UserRegisteredFilter,
 };
-use crate::abis::ownership_abi::{Ownership, OwnershipEvents};
+use crate::ownership::ownership_abi::{Ownership, OwnershipEvents};
 use crate::config::app_state::AppState;
-use crate::events::contract_models::{NewAuthenticitySetting, NewContract, NewItem, NewOwnershipClaim, UserInfo};
+use crate::contract_models::{NewAuthenticitySetting, NewContract, NewItem, NewOwnershipClaim, UserInfo};
 use crate::schema::{
     authenticity_settings, contracts, items, ownership_claims,
     users_info,
@@ -228,7 +228,7 @@ fn process_ownership_created_event(
             contract_address,
             owner,
             tnx_hash: txn_hash.unwrap(),
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339(),
         })
         .execute(conn)
         .map_err(|e| {
@@ -273,7 +273,7 @@ async fn process_user_registered_event(
             user_address,
             username: event.username.to_string(),
             is_registered: true,
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339(),
             tnx_hash: txn_hash.unwrap(),
         })
         .execute(conn)
@@ -336,7 +336,7 @@ async fn process_item_created_event(
             owner: item.owner.to_string(),
             manufacturer: item.manufacturer,
             metadata: item.metadata,
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339(),
             tnx_hash: txn_hash.unwrap(),
         })
         .execute(conn)
@@ -383,7 +383,7 @@ fn process_ownership_transferred_event(
             new_owner,
             old_owner,
             tnx_hash: txn_hash.unwrap(),
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339()
         })
         .execute(conn)
         .map_err(|e| {
@@ -428,7 +428,7 @@ fn process_authenticity_set_event(
         .values(NewAuthenticitySetting {
             authenticity_address,
             tnx_hash: txn_hash.unwrap(),
-            created_at: Utc::now().naive_utc().to_string(),
+            created_at:  Utc::now().to_rfc3339(),
         })
         .execute(conn)
         .map_err(|e| {

@@ -15,7 +15,7 @@ library OwnershipLib {
             revert EriErrors.USERNAME_MUST_BE_AT_LEAST_3_LETTERS();
         }
         //reverts if username is already used by someone else
-        //tge frontend will make a call to the backend to check the availability of the username
+        //the frontend will make a call to the backend to check the availability of the username
         // if (isRegistered(users, username)) {
         //     //no duplicate username and address
         //     revert EriErrors.NAME_NOT_AVAILABLE(username);
@@ -134,45 +134,46 @@ library OwnershipLib {
     // }
 
     //TODO: THIS FUNCTION WILL BE REMOVED, THIS WILL BE DONE ON THE BACKEND (DATABASE)
-    // function _generateChangeOfOwnershipCode(
-    //     mapping(string => IEri.UserProfile) storage users,
-    //     mapping(address => string) storage usernames,
-    //     mapping(address => mapping(string => IEri.Item)) storage ownedItems,
-    //     mapping(bytes32 => address) storage temp,
-    //     mapping(bytes32 => mapping(address => IEri.Item)) storage tempOwners,
-    //     string memory itemId,
-    //     address caller,
-    //     address tempOwner
-    // ) external returns (bytes32) {
-    //     if (tempOwner == caller) {
-    //         revert EriErrors.CANNOT_GENERATE_CODE_FOR_YOURSELF(caller);
-    //     }
-    //     // make sure only the item owner can generate code for the item
-
-    //      if (!isRegistered(usernames, caller)) {
-    //         revert EriErrors.NOT_REGISTERED(caller);
-    //     }
-
-    //     IEri.Item memory _item = ownedItems[caller][itemId];
-
-    //     //this is the code the owner will give to the new owner to claim ownership
-    //     bytes32 itemHash = keccak256(abi.encode(_item)); //it will always be the same every time
-
-    //     //you cannot generate code for an item for more than 1 person at a time
-    //     if (temp[itemHash] != address(0)) {
-    //         revert EriErrors.ITEM_NOT_CLAIMED_YET();
-    //     }
-
-    //     // if you have already generated the code, you don't need to generate anymore (no need anymore)
-    //     //        if (tempOwners[itemHash][tempOwner].owner != address(0)) {
-    //     //            revert EriErrors.CODE_ALREADY_GENERATED();
-    //     //        }
-
-    //     tempOwners[itemHash][tempOwner] = _item;
-    //     temp[itemHash] = tempOwner;
-
-    //     return itemHash;
-    // }
+//     function _generateChangeOfOwnershipCode(
+//         mapping(string => IEri.UserProfile) storage users,
+//         mapping(address => string) storage usernames,
+//         mapping(address => mapping(string => IEri.Item)) storage ownedItems,
+//         mapping(bytes32 => address) storage temp,
+//         mapping(bytes32 => mapping(address => IEri.Item)) storage tempOwners,
+//         string memory itemId,
+//         address caller,
+//         address tempOwner
+//     ) external returns (bytes32) {
+//
+//         if (tempOwner == caller) {
+//             revert EriErrors.CANNOT_GENERATE_CODE_FOR_YOURSELF(caller);
+//         }
+//         // make sure only the item owner can generate code for the item
+//
+//          if (!isRegistered(usernames, caller)) {
+//             revert EriErrors.NOT_REGISTERED(caller);
+//         }
+//
+//         IEri.Item memory _item = ownedItems[caller][itemId];
+//
+//         //this is the code the owner will give to the new owner to claim ownership
+//         bytes32 itemHash = keccak256(abi.encode(_item)); //it will always be the same every time
+//
+//         //you cannot generate code for an item for more than 1 person at a time
+//         if (temp[itemHash] != address(0)) {
+//             revert EriErrors.ITEM_NOT_CLAIMED_YET();
+//         }
+//
+//         // if you have already generated the code, you don't need to generate anymore (no need anymore)
+//         //        if (tempOwners[itemHash][tempOwner].owner != address(0)) {
+//         //            revert EriErrors.CODE_ALREADY_GENERATED();
+//         //        }
+//
+//         tempOwners[itemHash][tempOwner] = _item;
+//         temp[itemHash] = tempOwner;
+//
+//         return itemHash;
+//     }
 
     function _newOwnerClaimOwnership(
         // mapping(string => IEri.UserProfile) storage users,

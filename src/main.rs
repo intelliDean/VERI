@@ -6,7 +6,9 @@ mod services;
 mod utility;
 mod schema;
 mod events;
-mod abis;
+mod authenticity;
+mod ownership;
+mod contract_models;
 
 #[tokio::main]
 async fn main() {
