@@ -27,10 +27,10 @@ CREATE TABLE IF NOT EXISTS manufacturers
 CREATE TABLE IF NOT EXISTS ownership_codes
 (
     ownership_code TEXT PRIMARY KEY,
+    item_id TEXT NOT NULL, 
     item_owner     TEXT NOT NULL,
     temp_owner     TEXT NOT NULL,
-    created_at     TEXT NOT NULL,
-    tnx_hash       TEXT NOT NULL
+    created_at     TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS items
@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS ownership_claims
 (
     id         SERIAL PRIMARY KEY,
     item_id    TEXT NOT NULL,
-    new_owner  TEXT NOT NULL,
     old_owner  TEXT NOT NULL,
+    new_owner  TEXT NOT NULL,    
     tnx_hash   TEXT NOT NULL,
     created_at TEXT NOT NULL
 );

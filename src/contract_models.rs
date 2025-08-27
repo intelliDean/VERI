@@ -60,10 +60,10 @@ pub struct NewManufacturer {
 #[diesel(table_name = crate::schema::ownership_codes)]
 pub struct OwnershipCode {
     pub ownership_code: String,
+    pub item_id: String,
     pub item_owner: String,
     pub temp_owner: String,
     pub created_at: String,
-    pub tnx_hash: String,
 }
 
 #[derive(Queryable, Selectable, Serialize, Deserialize, ToSchema)]

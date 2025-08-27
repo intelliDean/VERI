@@ -1,7 +1,7 @@
 use crate::authenticity::get_manufacturer::__path_get_manufacturer;
 use crate::authenticity::is_username_exist::__path_manufacturer_name_exists;
 use crate::authenticity::is_username_exist::{IsExistsQuery, IsExistsResponse};
-use crate::contract_models::{Manufacturer, ManufacturerQuery};
+use crate::contract_models::{Manufacturer, ManufacturerQuery, Item};
 use crate::models::certificate_model::{
     CertificateData, Eip712Object, RegInput, SignedCertificate,
 };
@@ -10,7 +10,9 @@ use crate::ownership::{
     is_name_exist::{__path_user_exists, UserExistsQuery, UserExistsResponse},
     get_my_items::{__path_get_owner_items, ItemQuery, ItemsResponse},
     transfer_ownership_code::{__path_transfer_ownership_code, OwnershipCodeResponse, GenerateOwnershipCodeQuery},
-    get_transfer_code::{__path_get_ownership_code, GetOwnershipCodeQuery}
+    get_transfer_code::{__path_get_ownership_code, GetOwnershipCodeQuery},
+    revoke_ownership_code::{__path_revoke_ownership_code, OwnershipQuery, OwnershipResponse },
+    get_item::__path_get_item
 };
 use crate::services::{
     create_eip712::__path_create_certificate,
@@ -20,7 +22,11 @@ use crate::services::{
     },
     qr_code::__path_generate_qr_code,
     verify_authenticity::__path_verify_authenticity,
+    set_autheticity::{__path_set_authenticity, SetAuthenticityResponse, SetAuthenticityRequest},
+    claim_ownership::{__path_claim_ownership, ClaimOwnershipResponse, ClaimOwnershipRequest},
+    create_item::{__path_create_item, CreateItemResponse, CreateItemRequest},
 };
+use crate::services::register_user::{__path_user_register, UserRegisterResponse, UserRegisterRequest};
 use utoipa::OpenApi;
 
 // Swagger/OpenAPI configuration
@@ -40,7 +46,13 @@ use utoipa::OpenApi;
         user_exists,
         get_owner_items,
         transfer_ownership_code,
-        get_ownership_code
+        get_ownership_code,
+        revoke_ownership_code,
+        user_register,
+        set_authenticity,
+        claim_ownership,
+        create_item,
+        get_item,
     ),
     components(
         schemas(
@@ -60,7 +72,18 @@ use utoipa::OpenApi;
             ItemsResponse,
             GenerateOwnershipCodeQuery,
             OwnershipCodeResponse,
-            GetOwnershipCodeQuery
+            GetOwnershipCodeQuery,
+            OwnershipResponse,
+            OwnershipQuery,
+            UserRegisterResponse,
+            UserRegisterRequest,
+            SetAuthenticityRequest,
+            SetAuthenticityResponse,
+            ClaimOwnershipRequest,
+            ClaimOwnershipResponse,
+            CreateItemResponse,
+            CreateItemRequest,
+            Item
         ),
         // responses()
     ),

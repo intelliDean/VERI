@@ -1,11 +1,11 @@
 use crate::config::app_state::AppState;
-use crate::contract_models::{Item, OwnershipCode};
+use crate::contract_models::OwnershipCode;
 use crate::schema::{items, ownership_codes, users_info};
 use axum::{
-    Json,
     extract::{Query, State},
     http::StatusCode,
     response::IntoResponse,
+    Json,
 };
 use chrono::Utc;
 use diesel::prelude::*;
@@ -118,8 +118,8 @@ async fn generate_ownership_code_internal(
     // Generate keccak256 hash of caller, temp_owner, item_id, and current timestamp
     let hash_input = format!(
         "{}{}{}{}",
-        query.caller.to_lowercase(),
-        query.temp_owner.to_lowercase(),
+        query.caller,
+        query.temp_owner,
         query.item_id,
         Utc::now().to_rfc3339()
     );
@@ -129,10 +129,10 @@ async fn generate_ownership_code_internal(
     diesel::insert_into(ownership_codes::table)
         .values(OwnershipCode {
             ownership_code: ownership_code.clone(),
-            item_owner: query.caller.to_lowercase(),
-            temp_owner: query.temp_owner.to_lowercase(),
+            item_id: query.item_id.clone(),
+            item_owner: query.caller.clone(),
+            temp_owner: query.temp_owner.clone(),
             created_at: Utc::now().to_rfc3339(),
-            tnx_hash: String::new(), //TODO: TO BE REMOVED FROM THE TABLE
         })
         .execute(conn)
         .map_err(|e| {

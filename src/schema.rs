@@ -56,8 +56,8 @@ diesel::table! {
     ownership_claims (id) {
         id -> Int4,
         item_id -> Text,
-        new_owner -> Text,
         old_owner -> Text,
+        new_owner -> Text,
         tnx_hash -> Text,
         created_at -> Text,
     }
@@ -66,10 +66,10 @@ diesel::table! {
 diesel::table! {
     ownership_codes (ownership_code) {
         ownership_code -> Text,
+        item_id -> Text,
         item_owner -> Text,
         temp_owner -> Text,
         created_at -> Text,
-        tnx_hash -> Text,
     }
 }
 

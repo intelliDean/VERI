@@ -5,3 +5,5 @@ pub mod get_user_info;
 pub mod get_my_items;
 pub mod transfer_ownership_code;
 pub mod get_transfer_code;
+pub mod revoke_ownership_code;
+pub mod get_item;

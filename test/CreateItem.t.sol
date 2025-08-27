@@ -4,7 +4,7 @@
 // import "../contracts/Ownership.sol";
 // import "../contracts/EriErrors.sol";
 // import {IEri} from "../contracts/IEri.sol";
-// import {OwnershipLib} from "../contracts/OwnershipLib.sol";
+// import {OwnershipLib} from "../contracts/OwnershipLib.txt";
 // import {Ownership} from "../contracts/Ownership.sol";
 // import {Test} from "forge-std/Test.sol";
 

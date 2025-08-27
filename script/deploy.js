@@ -7,22 +7,23 @@ const {OWNER, CERTIFICATE, SIGNING_DOMAIN, SIGNATURE_VERSION} = process.env;
 async function main() {
 
 
-    console.log("🚀 Deploying contracts...OwnershipLib");
-    // Step 1: Deploy OwnershipLib
-    const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
-    const ownershipLib = await ownershipLibFactory.deploy();
-    console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
+    // console.log("🚀 Deploying contracts...OwnershipLib");
+    // // Step 1: Deploy OwnershipLib
+    // const ownershipLibFactory = await hre.ethers.getContractFactory("OwnershipLib");
+    // const ownershipLib = await ownershipLibFactory.deploy();
+    // console.log(`📚 OwnershipLib deployed at: ${ownershipLib.target}`);
 
     console.log("🚀 Deploying contracts...Ownership Contract");
 
 
     // Step 2: Deploy Ownership using OwnershipLib
-    const ownershipContract = await hre.ethers.getContractFactory("Ownership", {
-        libraries: {
-            // OwnershipLib: ownershipLib.target,
-            OwnershipLib: ownershipLib.target,
-        },
-    });
+    const ownershipContract = await hre.ethers.getContractFactory("Ownership");
+    //     , {
+    //     libraries: {
+    //         // OwnershipLib: ownershipLib.target,
+    //         OwnershipLib: ownershipLib.target,
+    //     },
+    // });
     const ownership = await ownershipContract.deploy(OWNER);
     console.log(`📦 Ownership deployed at: ${ownership.target}`);
 
@@ -46,18 +47,13 @@ main().catch((error) => {
     process.exitCode = 1;
 });
 
+//TODO: BASE (NEW STYLE)
 
+// 📦 Ownership deployed at: 0x1F984AA12604e65461a6aAdE077c1A09bd6039cF
+// https://sepolia.basescan.org/address/0x1F984AA12604e65461a6aAdE077c1A09bd6039cF#code
 
-
-//BASE
-// 📚 OwnershipLib deployed at: 0x4719D3637B0C9508C776F922EBB132AA861cc3fd
-// https://sepolia.basescan.org/address/0x4719D3637B0C9508C776F922EBB132AA861cc3fd#code
-
-// 📦 Ownership deployed at: 0x02e779664E1610ce9b81233C7f7fD9e911dd1DEe
-// https://sepolia.basescan.org/address/0x02e779664E1610ce9b81233C7f7fD9e911dd1DEe#code
-
-// 🧾 Authenticity deployed at: 0x1901cc67055A6bE3238d0fc1c2dEc3a62CFEb8d5
-// https://sepolia.basescan.org/address/0x1901cc67055A6bE3238d0fc1c2dEc3a62CFEb8d5#code
+// 🧾 Authenticity deployed at: 0x5BcAD18E0A0B31A1F5840e00D472AEd45bcb38B9
+// https://sepolia.basescan.org/address/0x5BcAD18E0A0B31A1F5840e00D472AEd45bcb38B9#code
 
 // to verify a contract, you need the contract address and also the constructor parameters
 // npx hardhat verify --network base 0xf36f55D6Df2f9d5C7829ed5751d7E88FD3E82c2E 0xF2E7E2f51D7C9eEa9B0313C2eCa12f8e43bd1855 0x527caBd4bb83F94f1Fc1888D0691EF95e86795A1
@@ -72,6 +68,11 @@ main().catch((error) => {
 
 // 🧾 Authenticity deployed at: 0x63616b20f7A12f9Ba67BDF957f1400CDbF725fF8
 // https://testnet.snowtrace.io/address/0x63616b20f7A12f9Ba67BDF957f1400CDbF725fF8#code
+
+//TODO: VERY (NEW STYLE)
+// 📦 Ownership deployed at: 0x9373ab1aAC601BB47053e44d29Ac0f33B5dAD3d6
+// 🚀 Deploying contracts...Authenticity
+// 🧾 Authenticity deployed at: 0xE72Aa9D0791b2Bd42c6f6cAaFd7dC9995ce77E1a
 
 //VERY MAINNET
 // 📚 OwnershipLib deployed at: 0x442576ef8EA93B6aA30cb7C779b8cC1e402bca5e

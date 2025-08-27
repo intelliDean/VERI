@@ -85,7 +85,8 @@ pub async fn manufacturer_registers(
         (status = 200, description = "Owner retrieved successfully", body = String),
         (status = 400, description = "Invalid Owner Address"),
         (status = 500, description = "Internal server error")
-    )
+    ),
+    tag = "Manufacturers"
 )]
 pub async fn get_owner(
     State(state): State<Arc<AppState>>,
